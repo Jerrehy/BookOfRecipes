@@ -1,5 +1,5 @@
 # Получение объекта приложения
-from tourist_app import app
+from recipe_app import app
 
 # Основной метод запуска приложения
 if __name__ == '__main__':
