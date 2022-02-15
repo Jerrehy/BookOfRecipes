@@ -42,3 +42,12 @@ class LoginForm(FlaskForm):
 class RecipeInfoById(FlaskForm):
     id_recipe = HiddenField()
     submit_info = SubmitField(label='Подробнее о рецепте')
+
+
+# Форма изменения данных о пользователе
+class UpdateUserProfile(FlaskForm):
+    # Данные для создания нового пользователя с ограничениями, которые накладываются на таблицу в БД
+    fio = TextAreaField(label='Новое ФИО:')
+    email = EmailField(label='Электронная почта:')
+    photo = StringField(label='Ссылка на новое фото пользователя с размером близким к 300х300')
+    submit_update = SubmitField(label='Обновить данные профиля')

@@ -42,6 +42,14 @@ class BookUser(db.Model, UserMixin):
     def get_user_by_login(login):
         return BookUser.query.filter_by(login=login).first()
 
+    # Получение информации о пользователе по логину с ролью
+    @staticmethod
+    def get_user_by_login_with_role(login):
+        query = db.session.query(BookUser, RoleUser)
+        query = query.join(RoleUser, RoleUser.id_role == BookUser.id_role)
+        query = query.filter(BookUser.login == login)
+        return query.first()
+
     # Получение информации о пользователе по фамилии
     @staticmethod
     def get_user_by_fio(fio):
