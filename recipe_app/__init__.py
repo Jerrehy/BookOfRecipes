@@ -24,7 +24,9 @@ bcrypt = Bcrypt(app)
 
 # Подключение узлов с методами к приложению
 # from app.module import route
+from  recipe_app.identification.identification import identification
+from recipe_app.recipe_page.recipe_page import recipe
 
 # app.register_blueprint(route)
-
-
+app.register_blueprint(identification)
+app.register_blueprint(recipe)
