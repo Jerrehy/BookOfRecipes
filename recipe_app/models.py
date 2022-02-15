@@ -119,6 +119,13 @@ class IngredientInRecipe(db.Model):
     __tablename__ = 'ingredient_in_recipe'
     __table_args__ = {'extend_existing': True}
 
+    @staticmethod
+    def get_all_ingredients_for_recipe(id_recipe):
+        query = db.session.query(IngredientInRecipe, Ingredient)
+        query = query.join(Ingredient, Ingredient.id_ingredient == IngredientInRecipe.id_ingredient)
+        query = query.filter(IngredientInRecipe.id_recipe == id_recipe)
+        return query.all()
+
 
 # Таблица с владельцами рецептов
 class Publication(db.Model):
@@ -137,6 +144,14 @@ class Recipe(db.Model):
         query = db.session.query(Recipe, RecipeCategory)
         query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
         return query.all()
+
+    # Получение списка всех рецептов
+    @staticmethod
+    def get_recipe_by_id_with_category(id_recipe):
+        query = db.session.query(Recipe, RecipeCategory)
+        query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
+        query = query.filter(Recipe.id_recipe == id_recipe)
+        return query.first()
 
 
 # Таблица с категориями рецептов

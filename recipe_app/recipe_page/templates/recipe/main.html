@@ -7,6 +7,7 @@
 {% block content %}
 <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-left" style="color:white">
     <h1 class="display-4 font-weight-normal" align="center">Вкусно и интересно</h1>
+    <h3 class="display-6 font-weight-normal" align="center">Пальчики оближешь</h3>
     <div class="row" style="margin-top:20px; margin-left:20px">
         <div class="col-12">
             <h2>Список рецептов</h2>
@@ -16,8 +17,8 @@
                     <tr>
                         <th scope="col">Именования рецепта</th>
                         <th scope="col">Категория рецепта</th>
+                        <th scope="col">Количество персон</th>
                         <th scope="col">Дата публикации</th>
-                        <th scope="col">Описание рецепта</th>
                         <th scope="col">Фото</th>
                         <th scope="col"></th>
                     </tr>
@@ -27,8 +28,8 @@
                     <tr>
                         <td>{{ recipe.Recipe.recipe_name }}</td>
                         <td>{{ recipe.RecipeCategory.name_category }}</td>
+                        <td>{{ recipe.RecipeCategory.number_of_servings }}</td>
                         <td>{{ recipe.Recipe.date_publication}}</td>
-                        <td>{{ recipe.Recipe.description }}</td>
                         <td><img src="{{ recipe.Recipe.photo }}" width="400" height="400"></td>
                         <td>
                             <form method="post" action="{{url_for('recipe.recipe_page_view')}}">
