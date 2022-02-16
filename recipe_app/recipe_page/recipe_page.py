@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
-from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review
-from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment
+from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review, Favorite
+from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment, AddFavorite
 from flask_login import login_required, current_user
 
 recipe = Blueprint('recipe', __name__, template_folder="templates")
@@ -31,7 +31,9 @@ def one_recipe_page_view(id_recipe):
     # Форма для добавления комментария
     add_comment = AddComment()
     # Список всех комментариев для определённого рецепта
-    all_comments = Review.get_review(id_recipe)
+    all_comments = Review.get_review_by_id_recipe(id_recipe)
+    # Форма добавления рецепта в избранное
+    add_favorite = AddFavorite()
 
     if add_comment.submit_add.data:
         # Добавления отзыва
@@ -39,8 +41,14 @@ def one_recipe_page_view(id_recipe):
                           add_comment.rate.data)
         return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
 
+    elif add_favorite.submit_add_fav.data:
+        # Добавление рецепта в избранные
+        Favorite.add_favorite(add_favorite.id_recipe.data, current_user.get_id())
+        return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+
     return render_template('recipe/one_recipe.html', recipe_for_view=recipe_for_view, all_comments=all_comments,
-                           ingredients_in_recipe=ingredients_in_recipe, add_comment=add_comment, id_recipe=id_recipe)
+                           ingredients_in_recipe=ingredients_in_recipe, add_comment=add_comment,
+                           add_favorite=add_favorite, id_recipe=id_recipe)
 
 
 @recipe.route('/personal_recipes', methods=['GET', 'POST'])

@@ -107,6 +107,35 @@ class Favorite(db.Model):
     __tablename__ = 'favorite'
     __table_args__ = {'extend_existing': True}
 
+    # Получение всего списка избранных рецептов
+    @staticmethod
+    def get_favorite_by_id_user(id_book_user):
+        return Favorite.query.filter_by(id_book_user=id_book_user).all()
+
+    # Добавление рецепта в избранное пользователя
+    @staticmethod
+    def add_favorite(id_recipe, id_book_user):
+        new_user_favorite = Favorite(id_recipe=id_recipe, id_book_user=id_book_user)
+        try:
+            db.session.add(new_user_favorite)
+            db.session.commit()
+            flash("Рецепт был успешно добавлен в избранное.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при добавлении рецепта в избранное. Возможно у вас уже есть "
+                  "этот рецепт в избранном.", category='danger')
+
+    # Удаление рецепта
+    @staticmethod
+    def del_favorite(id_book_user, id_recipe):
+        Favorite.query.filter_by(id_book_user=id_book_user, id_recipe=id_recipe).delete()
+        try:
+            flash("Рецепт был успешно убран из избранного.", category='success')
+            db.session.commit()
+        except:
+            flash("Произошла ошибка при удалении рецепта из списка избранных. Повторите попытку.", category='danger')
+            db.session.rollback()
+
 
 # Таблица с ингридиентами на выбор
 class Ingredient(db.Model):
@@ -170,6 +199,16 @@ class Recipe(db.Model):
         query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
         return query.all()
 
+    # Получение списка всех рецептов
+    @staticmethod
+    def get_all_favorite_recipes(id_book_user):
+        query = db.session.query(Recipe, RecipeCategory, Favorite, BookUser)
+        query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
+        query = query.join(Favorite, Favorite.id_recipe == Recipe.id_recipe)
+        query = query.join(BookUser, BookUser.id_book_user == Favorite.id_book_user)
+        query = query.filter(BookUser.id_book_user == id_book_user)
+        return query.all()
+
     # Получение списка всех рецептов с привязкой к рецепту
     @staticmethod
     def get_recipe_by_id_with_category(id_recipe):
@@ -177,16 +216,6 @@ class Recipe(db.Model):
         query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
         query = query.filter(Recipe.id_recipe == id_recipe)
         return query.first()
-
-    # # Изменение данных о пользователе
-    # @staticmethod
-    # def update_recipe_info():
-    #     try:
-    #         db.session.commit()
-    #         flash("Рецепт был успешно изменён.", category='success')
-    #     except:
-    #         db.session.rollback()
-    #         flash("Произошла ошибка при измении рецепта. Повторите попытку.", category='danger')
 
     # Добавление нового рецепта
     @staticmethod
@@ -234,9 +263,17 @@ class Review(db.Model):
     __tablename__ = 'review'
     __table_args__ = {'extend_existing': True}
 
+    @staticmethod
+    def get_review_by_id_book_user(id_book_user):
+        query = db.session.query(Review, BookUser, Recipe)
+        query = query.join(BookUser, Review.id_book_user == BookUser.id_book_user)
+        query = query.join(Recipe, Recipe.id_recipe == Review.id_recipe)
+        query = query.filter(Review.id_book_user == id_book_user)
+        return query.all()
+
     # Получение информации о всех отзывах по ID рецепта
     @staticmethod
-    def get_review(id_recipe):
+    def get_review_by_id_recipe(id_recipe):
         query = db.session.query(Review, BookUser)
         query = query.join(BookUser, Review.id_book_user == BookUser.id_book_user)
         query = query.filter(Review.id_recipe == id_recipe)
@@ -254,3 +291,13 @@ class Review(db.Model):
             db.session.rollback()
             flash("Произошла ошибка при публикации отзыва. Повторите попытку.", category='danger')
 
+    @staticmethod
+    def del_review(id_book_user, id_recipe):
+        search = Review.query.filter_by(id_book_user=id_book_user, id_recipe=id_recipe).first()
+        Review.query.filter_by(id_book_user=id_book_user, id_recipe=id_recipe).delete()
+        try:
+            flash("Комментарий был успещно удалён.", category='success')
+            db.session.commit()
+        except:
+            flash("Произошла ошибка при удалении комментария. Повторите попытку.", category='danger')
+            db.session.rollback()

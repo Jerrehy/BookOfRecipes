@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint, redirect, url_for, session
-from recipe_app.models import BookUser
-from recipe_app.forms import UpdateUserProfile
+from recipe_app.models import BookUser, Review, Recipe, Favorite
+from recipe_app.forms import UpdateUserProfile, DeleteComment, RecipeInfoById, DelFavorite
 from flask_login import login_required, current_user
 
 
@@ -51,3 +51,44 @@ def profile_update_view():
 
     return render_template('profile/update_user_profile.html', activated_user=activated_user,
                            update_profile_form=update_profile_form)
+
+
+# Просмотр комментариев пользователя
+@profile.route('/profile_view_comments', methods=['GET', 'POST'])
+@login_required
+def user_personal_comments():
+    # Все отзывы пользователя
+    all_comments = Review.get_review_by_id_book_user(current_user.get_id())
+    # Форма удаления комментария
+    del_form_recipe = DeleteComment()
+
+    # Удаления отзыва
+    if del_form_recipe.submit_del.data:
+        Review.del_review(current_user.get_id(), del_form_recipe.id_recipe.data)
+        return redirect(url_for('profile.user_personal_comments'))
+
+    return render_template('profile/personal_reviews.html', all_comments=all_comments, del_form_recipe=del_form_recipe)
+
+
+# Просмотр избранных рецептов пользователя
+@profile.route('/profile_view_favorite', methods=['GET', 'POST'])
+@login_required
+def user_personal_favorite():
+    # Получение списка всех рецептов
+    all_recipe = Recipe.get_all_favorite_recipes(current_user.get_id())
+    # Подключение формы для перехода за большей информацией о рецептемаршруте
+    info_about_recipe = RecipeInfoById()
+    # Форма удаления рецепта из избранного
+    del_form_favorite = DelFavorite()
+
+    # Переход по форме "узнать больше"
+    if info_about_recipe.submit_info.data:
+        return redirect(url_for('recipe.one_recipe_page_view', id_recipe=info_about_recipe.id_recipe.data))
+
+    # Удаление из избранных
+    elif del_form_favorite.submit_del_fav.data:
+        Favorite.del_favorite(current_user.get_id(), del_form_favorite.id_recipe.data)
+        return redirect(url_for('profile.user_personal_favorite'))
+
+    return render_template('profile/favorite_recipe.html', all_recipe=all_recipe, info_about_recipe=info_about_recipe,
+                           del_form_favorite=del_form_favorite)
