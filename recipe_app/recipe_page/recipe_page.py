@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
 from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication
-from recipe_app.forms import RecipeInfoById, AddRecipeForm
+from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe
 from flask_login import login_required, current_user
 
 recipe = Blueprint('recipe', __name__, template_folder="templates")
@@ -36,11 +36,20 @@ def one_recipe_page_view(id_recipe):
 @recipe.route('/personal_recipes', methods=['GET', 'POST'])
 @login_required
 def personal_recipe_view():
-    if session['role'] != 2:
+    if session['role'] == 1:
         # Получение информации о всех рецептах по ID пользователя
         all_recipe = Publication.get_personal_recipes(current_user.get_id())
 
-        return render_template('recipe/view_personal_recipe.html', all_recipe=all_recipe)
+        # Форма удаления рецепта
+        del_recipe_form = DeleteRecipe()
+
+        # Удаление рецепта - активация
+        if del_recipe_form.submit_del.data:
+            Recipe.del_recipe(del_recipe_form.id_recipe.data)
+            return redirect(url_for('recipe.personal_recipe_view'))
+
+        return render_template('recipe/view_personal_recipe.html', all_recipe=all_recipe,
+                               del_recipe_form=del_recipe_form)
     else:
         flash("У администратора нет личных рецептов", category='danger')
         return redirect(url_for('recipe.recipe_page_view'))
@@ -49,7 +58,7 @@ def personal_recipe_view():
 @recipe.route('/add_personal_recipe', methods=['GET', 'POST'])
 @login_required
 def personal_recipe_add():
-    if session['role'] != 2:
+    if session['role'] == 1:
         # Форма для добавления рецепта
         add_recipe_form = AddRecipeForm()
 
@@ -71,5 +80,5 @@ def personal_recipe_add():
 
         return render_template('recipe/add_personal_recipe.html', add_recipe_form=add_recipe_form)
     else:
-        flash("Работа с добавление рецептов доступна только пользователям", category='danger')
+        flash("Работа с рецептами чеез личную страницу доступен только пользователям", category='danger')
         return redirect(url_for('recipe.recipe_page_view'))

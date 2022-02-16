@@ -22,6 +22,7 @@
                         <th scope="col">Количество персон</th>
                         <th scope="col">Дата публикации</th>
                         <th scope="col">Фото</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,12 @@
                         <td>{{ recipe.Recipe.number_of_servings }}</td>
                         <td>{{ recipe.Recipe.date_publication}}</td>
                         <td><img src="{{ recipe.Recipe.photo }}" width="400" height="400"></td>
+                        <td>
+                            <form method="post" action="{{url_for('recipe.personal_recipe_view')}}">
+                                {{ del_recipe_form.id_recipe(value=recipe.Recipe.id_recipe) }}
+                                {{ del_recipe_form.submit_del(class="btn btn-lg btn-block btn-danger") }}
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -52,7 +59,8 @@
                     { orderable: true, searchable: true },
                     { orderable: true, searchable: true },
                     { orderable: true, searchable: true },
-                    { orderable: true, searchable: true }
+                    { orderable: true, searchable: true }, 
+                    { orderable: false, searchable: false }
                 ],
                 language: {
                     "processing": "Подождите...",

@@ -178,15 +178,15 @@ class Recipe(db.Model):
         query = query.filter(Recipe.id_recipe == id_recipe)
         return query.first()
 
-    # Изменение данных о пользователе
-    @staticmethod
-    def update_recipe_info():
-        try:
-            db.session.commit()
-            flash("Рецепт был успешно изменён.", category='success')
-        except:
-            db.session.rollback()
-            flash("Произошла ошибка при измении рецепта. Повторите попытку.", category='danger')
+    # # Изменение данных о пользователе
+    # @staticmethod
+    # def update_recipe_info():
+    #     try:
+    #         db.session.commit()
+    #         flash("Рецепт был успешно изменён.", category='success')
+    #     except:
+    #         db.session.rollback()
+    #         flash("Произошла ошибка при измении рецепта. Повторите попытку.", category='danger')
 
     # Добавление нового пользователя
     @staticmethod
@@ -200,6 +200,16 @@ class Recipe(db.Model):
         except:
             db.session.rollback()
             flash("Произошла ошибка при нового рецепта. Повторите попытку.", category='danger')
+
+    @staticmethod
+    def del_recipe(id_recipe):
+        Recipe.query.filter_by(id_recipe=id_recipe).delete()
+        try:
+            flash("Рецепт был успешно удалён.", category='success')
+            db.session.commit()
+        except:
+            flash("Произошла ошибка при удалении рецепта. Повторите попытку.", category='danger')
+            db.session.rollback()
 
 
 # Таблица с категориями рецептов

@@ -63,3 +63,9 @@ class AddRecipeForm(FlaskForm):
     number_of_servings = IntegerField(label='Количество персон')
     photo = StringField(label='Ссылка на фото блюда с размером близким к 300х300')
     submit_add = SubmitField(label='Добавить рецепт')
+
+
+# Форма для удаления рецепта
+class DeleteRecipe(FlaskForm):
+    id_recipe = HiddenField()
+    submit_del = SubmitField(label='Удалить рецепт')
