@@ -69,7 +69,7 @@ class BookUser(db.Model, UserMixin):
             flash("Пользователь был успешно изменён.", category='success')
         except:
             db.session.rollback()
-            flash("Произошла ошибка при изменнии пользователя. Повторите попытку.", category='danger')
+            flash("Произошла ошибка при измении пользователя. Повторите попытку.", category='danger')
 
     # Добавление нового пользователя
     @staticmethod
@@ -132,6 +132,26 @@ class Publication(db.Model):
     __tablename__ = 'publication'
     __table_args__ = {'extend_existing': True}
 
+    @staticmethod
+    def get_personal_recipes(id_book_user):
+        query = db.session.query(Publication, Recipe, RecipeCategory)
+        query = query.join(Recipe, Recipe.id_recipe == Publication.id_recipe)
+        query = query.join(RecipeCategory, Recipe.id_category == RecipeCategory.id_category)
+        query = query.filter(Publication.id_book_user == id_book_user)
+        return query.all()
+
+    # Добавление нового пользователя
+    @staticmethod
+    def add_recipe_to_user(id_recipe, id_book_user):
+        new_recipe_to_user = Publication(id_recipe=id_recipe, id_book_user=id_book_user)
+        try:
+            db.session.add(new_recipe_to_user)
+            db.session.commit()
+            flash("Новый рецепт был успешно опубликован.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при публикации нового рецепта. Повторите попытку.", category='danger')
+
 
 # Таблица со всеми рецептами
 class Recipe(db.Model):
@@ -140,12 +160,17 @@ class Recipe(db.Model):
 
     # Получение списка всех рецептов
     @staticmethod
+    def get_recipes_by_name(recipe_name):
+        return Recipe.query.filter_by(recipe_name=recipe_name).first()
+
+    # Получение списка всех рецептов
+    @staticmethod
     def get_all_recipes():
         query = db.session.query(Recipe, RecipeCategory)
         query = query.join(RecipeCategory, RecipeCategory.id_category == Recipe.id_category)
         return query.all()
 
-    # Получение списка всех рецептов
+    # Получение списка всех рецептов с привязкой к рецепту
     @staticmethod
     def get_recipe_by_id_with_category(id_recipe):
         query = db.session.query(Recipe, RecipeCategory)
@@ -153,11 +178,44 @@ class Recipe(db.Model):
         query = query.filter(Recipe.id_recipe == id_recipe)
         return query.first()
 
+    # Изменение данных о пользователе
+    @staticmethod
+    def update_recipe_info():
+        try:
+            db.session.commit()
+            flash("Рецепт был успешно изменён.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при измении рецепта. Повторите попытку.", category='danger')
+
+    # Добавление нового пользователя
+    @staticmethod
+    def add_recipe(recipe_name, description, date_publication, id_category, photo, number_of_servings):
+        new_recipe = Recipe(recipe_name=recipe_name, description=description, date_publication=date_publication,
+                            id_category=id_category, photo=photo, number_of_servings=number_of_servings)
+        try:
+            db.session.add(new_recipe)
+            db.session.commit()
+            flash("Новый рецепт был успешно добавлен.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при нового рецепта. Повторите попытку.", category='danger')
+
 
 # Таблица с категориями рецептов
 class RecipeCategory(db.Model):
     __tablename__ = 'recipe_category'
     __table_args__ = {'extend_existing': True}
+
+    # Получение списка всех категорий рецептов
+    @staticmethod
+    def get_all_category():
+        return RecipeCategory.query.all()
+
+    # Получение информации об ID категории по именованию категорииы
+    @staticmethod
+    def get_category_by_name(name_category):
+        return RecipeCategory.query.filter_by(name_category=name_category).first()
 
 
 # Таблица с отзывами о рецептах

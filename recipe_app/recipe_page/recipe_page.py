@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for
-from recipe_app.models import Recipe, IngredientInRecipe
-from recipe_app.forms import RecipeInfoById
+from flask import Blueprint, render_template, redirect, url_for, session, flash
+from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication
+from recipe_app.forms import RecipeInfoById, AddRecipeForm
+from flask_login import login_required, current_user
 
 recipe = Blueprint('recipe', __name__, template_folder="templates")
 
@@ -30,3 +31,45 @@ def one_recipe_page_view(id_recipe):
 
     return render_template('recipe/one_recipe.html', recipe_for_view=recipe_for_view,
                            ingredients_in_recipe=ingredients_in_recipe)
+
+
+@recipe.route('/personal_recipes', methods=['GET', 'POST'])
+@login_required
+def personal_recipe_view():
+    if session['role'] != 2:
+        # Получение информации о всех рецептах по ID пользователя
+        all_recipe = Publication.get_personal_recipes(current_user.get_id())
+
+        return render_template('recipe/view_personal_recipe.html', all_recipe=all_recipe)
+    else:
+        flash("У администратора нет личных рецептов", category='danger')
+        return redirect(url_for('recipe.recipe_page_view'))
+
+
+@recipe.route('/add_personal_recipe', methods=['GET', 'POST'])
+@login_required
+def personal_recipe_add():
+    if session['role'] != 2:
+        # Форма для добавления рецепта
+        add_recipe_form = AddRecipeForm()
+
+        # Заполнение категории рецепта
+        add_recipe_form.category.choices = [i.name_category for i in RecipeCategory.get_all_category()]
+
+        if add_recipe_form.submit_add.data:
+            # Поиск ID категории блюда
+            category_for_add = RecipeCategory.get_category_by_name(add_recipe_form.category.data)
+            # Добавление нового рецепта
+            Recipe.add_recipe(add_recipe_form.recipe_name.data, add_recipe_form.description.data,
+                              add_recipe_form.date_publication.data, category_for_add.id_category,
+                              add_recipe_form.photo.data, add_recipe_form.number_of_servings.data)
+            # Публикация нового рецепта
+            new_recipe = Recipe.get_recipes_by_name(add_recipe_form.recipe_name.data)
+            Publication.add_recipe_to_user(new_recipe.id_recipe, current_user.get_id())
+
+            return redirect(url_for('recipe.personal_recipe_view'))
+
+        return render_template('recipe/add_personal_recipe.html', add_recipe_form=add_recipe_form)
+    else:
+        flash("Работа с добавление рецептов доступна только пользователям", category='danger')
+        return redirect(url_for('recipe.recipe_page_view'))

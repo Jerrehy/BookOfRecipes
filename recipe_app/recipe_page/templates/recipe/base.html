@@ -34,7 +34,7 @@
               class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a class="dropdown-item" href="{{ url_for('profile.profile_view') }}">Профиль пользователя</a></li>
-            <li><a class="dropdown-item" href="#">Мои рецепты</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('recipe.personal_recipe_view') }}">Мои рецепты</a></li>
             <li><a class="dropdown-item" href="#">Мои отзывы</a></li>
             <li><a class="dropdown-item" href="#">Избранные рецепты</a></li>
             <li><a class="dropdown-item" href="{{ url_for('identification.logout_page') }}">Выход</a></li>

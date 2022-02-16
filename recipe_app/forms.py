@@ -51,3 +51,15 @@ class UpdateUserProfile(FlaskForm):
     email = EmailField(label='Электронная почта:')
     photo = StringField(label='Ссылка на новое фото пользователя с размером близким к 300х300')
     submit_update = SubmitField(label='Обновить данные профиля')
+
+
+# Форма добавления рецепта
+class AddRecipeForm(FlaskForm):
+    # Данные для создания нового пользователя с ограничениями, которые накладываются на таблицу в БД
+    recipe_name = StringField(label='Именование рецепта:', validators=[DataRequired()])
+    description = TextAreaField(label='Описание приготовления', validators=[DataRequired()])
+    date_publication = DateField(label='Дата публикации', validators=[DataRequired()])
+    category = SelectField(label='Категория блюда:', choices=[])
+    number_of_servings = IntegerField(label='Количество персон')
+    photo = StringField(label='Ссылка на фото блюда с размером близким к 300х300')
+    submit_add = SubmitField(label='Добавить рецепт')
