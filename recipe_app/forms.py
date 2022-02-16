@@ -69,3 +69,11 @@ class AddRecipeForm(FlaskForm):
 class DeleteRecipe(FlaskForm):
     id_recipe = HiddenField()
     submit_del = SubmitField(label='Удалить рецепт')
+
+
+# Форма для добавления обзора
+class AddComment(FlaskForm):
+    id_recipe = HiddenField()
+    comment = TextAreaField(label='Ваш комментарий', validators=[DataRequired()])
+    rate = SelectField(label='Ваша оценка', choices=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    submit_add = SubmitField(label='Оставить отзыв')

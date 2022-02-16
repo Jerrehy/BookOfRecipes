@@ -140,7 +140,7 @@ class Publication(db.Model):
         query = query.filter(Publication.id_book_user == id_book_user)
         return query.all()
 
-    # Добавление нового пользователя
+    # Добавление публикации рецепта пользователю
     @staticmethod
     def add_recipe_to_user(id_recipe, id_book_user):
         new_recipe_to_user = Publication(id_recipe=id_recipe, id_book_user=id_book_user)
@@ -188,7 +188,7 @@ class Recipe(db.Model):
     #         db.session.rollback()
     #         flash("Произошла ошибка при измении рецепта. Повторите попытку.", category='danger')
 
-    # Добавление нового пользователя
+    # Добавление нового рецепта
     @staticmethod
     def add_recipe(recipe_name, description, date_publication, id_category, photo, number_of_servings):
         new_recipe = Recipe(recipe_name=recipe_name, description=description, date_publication=date_publication,
@@ -201,6 +201,7 @@ class Recipe(db.Model):
             db.session.rollback()
             flash("Произошла ошибка при нового рецепта. Повторите попытку.", category='danger')
 
+    # Удаление рецепта
     @staticmethod
     def del_recipe(id_recipe):
         Recipe.query.filter_by(id_recipe=id_recipe).delete()
@@ -232,3 +233,24 @@ class RecipeCategory(db.Model):
 class Review(db.Model):
     __tablename__ = 'review'
     __table_args__ = {'extend_existing': True}
+
+    # Получение информации о всех отзывах по ID рецепта
+    @staticmethod
+    def get_review(id_recipe):
+        query = db.session.query(Review, BookUser)
+        query = query.join(BookUser, Review.id_book_user == BookUser.id_book_user)
+        query = query.filter(Review.id_recipe == id_recipe)
+        return query.all()
+
+    # Добавление нового комментария для рецепта
+    @staticmethod
+    def add_review(id_recipe, id_book_user, comment, grade):
+        new_review = Review(id_recipe=id_recipe, id_book_user=id_book_user, grade=grade, comment=comment)
+        try:
+            db.session.add(new_review)
+            db.session.commit()
+            flash("Отзыв был успешно оставлен.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при публикации отзыва. Повторите попытку.", category='danger')
+
