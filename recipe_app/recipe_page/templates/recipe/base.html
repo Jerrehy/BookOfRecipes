@@ -28,7 +28,6 @@
           <a class="nav-link" href="{{ url_for('recipe.recipe_page_view') }}"> Главная страница </a>
         </li>
         {% if current_user.is_authenticated %}
-        {% if session['role'] == 1 %}
         <li class="dropdown">
           <a class="dropdown-toggle nav-link" data-toggle="dropdown"> Здравствуйте, {{session['login']}} <span
               class="caret"></span></a>
@@ -37,17 +36,6 @@
             <li><a class="dropdown-item" href="{{ url_for('recipe.personal_recipe_view') }}">Мои рецепты</a></li>
             <li><a class="dropdown-item" href="{{ url_for('profile.user_personal_comments') }}">Мои отзывы</a></li>
             <li><a class="dropdown-item" href="{{ url_for('profile.user_personal_favorite') }}">Избранные рецепты</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('identification.logout_page') }}">Выход</a></li>
-          </ul>
-        </li>
-        {% elif session['role'] == 2 %}
-        <li class="dropdown">
-          <a class="dropdown-toggle nav-link" data-toggle="dropdown"> Здравствуйте, {{session['login']}} <span
-              class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a class="dropdown-item" href="{{url_for('profile.profile_view')}}">Профиль администратора</a></li>
-            <li><a class="dropdown-item" href="#">Все рецепты</a></li>
-            <li><a class="dropdown-item" href="#">Все отзывы</a></li>
             <li><a class="dropdown-item" href="{{ url_for('identification.logout_page') }}">Выход</a></li>
           </ul>
         </li>

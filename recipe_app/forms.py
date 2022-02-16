@@ -95,3 +95,25 @@ class AddComment(FlaskForm):
     comment = TextAreaField(label='Ваш комментарий', validators=[DataRequired()])
     rate = SelectField(label='Ваша оценка', choices=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     submit_add = SubmitField(label='Оставить отзыв')
+
+
+# Форма для добавления ингредиента
+class AddIngredient(FlaskForm):
+    ingredient = StringField(label='Именование ингрелиента')
+    submit_add = SubmitField(label='Добавить ингредиент')
+
+
+# Форма для добавления ингредиента в рецепт
+class AddIngredientInRecipe(FlaskForm):
+    id_recipe = HiddenField()
+    ingredient = StringField(label='Именование ингрелиента')
+    submit_add = SubmitField(label='Добавить ингредиент в рецепт')
+
+
+# Форма удаления ингредиента
+class DelIngredient(FlaskForm):
+    id_ingredient = HiddenField()
+    ingredient = StringField(label='Именование ингрелиента')
+    submit_add = SubmitField(label='Добавить ингредиент в рецепт')
+
+
