@@ -36,10 +36,10 @@
             <li><a class="dropdown-item" href="{{ url_for('recipe.personal_recipe_view') }}">Мои рецепты</a></li>
             <li><a class="dropdown-item" href="{{ url_for('profile.user_personal_comments') }}">Мои отзывы</a></li>
             <li><a class="dropdown-item" href="{{ url_for('profile.user_personal_favorite') }}">Избранные рецепты</a></li>
+            <li><a class="dropdown-item" href="{{url_for('profile.view_profile_ingredient')}}">Добавить ингредиент</a></li>
             <li><a class="dropdown-item" href="{{ url_for('identification.logout_page') }}">Выход</a></li>
           </ul>
         </li>
-        {% endif %}
         {% else: %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('identification.login_page') }}"> Авторизация </a>

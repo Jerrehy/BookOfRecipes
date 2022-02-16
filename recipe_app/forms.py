@@ -99,21 +99,20 @@ class AddComment(FlaskForm):
 
 # Форма для добавления ингредиента
 class AddIngredient(FlaskForm):
-    ingredient = StringField(label='Именование ингрелиента')
-    submit_add = SubmitField(label='Добавить ингредиент')
+    ingredient = StringField(label='Именование ингредиента')
+    submit_add_ingred = SubmitField(label='Добавить ингредиент')
 
 
 # Форма для добавления ингредиента в рецепт
 class AddIngredientInRecipe(FlaskForm):
     id_recipe = HiddenField()
-    ingredient = StringField(label='Именование ингрелиента')
+    ingredient = StringField(label='Именование ингредиента')
+    weight = IntegerField(label='Вес ингредиента')
     submit_add = SubmitField(label='Добавить ингредиент в рецепт')
 
 
 # Форма удаления ингредиента
 class DelIngredient(FlaskForm):
     id_ingredient = HiddenField()
-    ingredient = StringField(label='Именование ингрелиента')
-    submit_add = SubmitField(label='Добавить ингредиент в рецепт')
-
+    submit_del_ingred = SubmitField(label='Удалить ингредиент')
 

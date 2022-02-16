@@ -34,6 +34,8 @@ def one_recipe_page_view(id_recipe):
     all_comments = Review.get_review_by_id_recipe(id_recipe)
     # Форма добавления рецепта в избранное
     add_favorite = AddFavorite()
+    # Форма удаления рецепта
+    delete_recipe = DeleteRecipe()
 
     if add_comment.submit_add.data:
         # Добавления отзыва
@@ -46,9 +48,18 @@ def one_recipe_page_view(id_recipe):
         Favorite.add_favorite(add_favorite.id_recipe.data, current_user.get_id())
         return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
 
+    elif delete_recipe.submit_del.data:
+        if session['role'] == 2:
+            # Удаление рецепта
+            Recipe.del_recipe(delete_recipe.id_recipe.data)
+            return redirect(url_for('recipe.recipe_page_view'))
+        else:
+            flash("Это может делать только админ", category='danger')
+            return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+
     return render_template('recipe/one_recipe.html', recipe_for_view=recipe_for_view, all_comments=all_comments,
                            ingredients_in_recipe=ingredients_in_recipe, add_comment=add_comment,
-                           add_favorite=add_favorite, id_recipe=id_recipe)
+                           add_favorite=add_favorite, id_recipe=id_recipe, delete_recipe=delete_recipe)
 
 
 @recipe.route('/personal_recipes', methods=['GET', 'POST'])

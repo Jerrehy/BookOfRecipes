@@ -142,6 +142,34 @@ class Ingredient(db.Model):
     __tablename__ = 'ingredient'
     __table_args__ = {'extend_existing': True}
 
+    # Получение списка всех игнредиентов в БД
+    @staticmethod
+    def get_all_ingredients():
+        return Ingredient.query.all()
+
+    # Добавление ингрединта в базу
+    @staticmethod
+    def add_ingredient(name_ingredient):
+        new_ingredient = Ingredient(name_ingredient=name_ingredient)
+        try:
+            db.session.add(new_ingredient)
+            db.session.commit()
+            flash("Новый ингредиент был успешно добавлен.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при добавлении нового ингредиента. Повторите попытку.", category='danger')
+
+    # Удаление ингредиента из базы
+    @staticmethod
+    def del_ingredient(id_ingredient):
+        Ingredient.query.filter_by(id_ingredient=id_ingredient).delete()
+        try:
+            flash("Ингредиент был успешно удалён.", category='success')
+            db.session.commit()
+        except:
+            flash("Произошла ошибка при удалении игредиента. Повторите попытку.", category='danger')
+            db.session.rollback()
+
 
 # Таблица с ингридиентами в блюде
 class IngredientInRecipe(db.Model):

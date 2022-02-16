@@ -1,8 +1,7 @@
-from flask import render_template, Blueprint, redirect, url_for, session
-from recipe_app.models import BookUser, Review, Recipe, Favorite
-from recipe_app.forms import UpdateUserProfile, DeleteComment, RecipeInfoById, DelFavorite
+from flask import render_template, Blueprint, redirect, url_for, session, flash
+from recipe_app.models import BookUser, Review, Recipe, Favorite, Ingredient
+from recipe_app.forms import UpdateUserProfile, DeleteComment, RecipeInfoById, DelFavorite, AddIngredient, DelIngredient
 from flask_login import login_required, current_user
-
 
 # Создание узла связанного с профилем и его изменением
 profile = Blueprint('profile', __name__, template_folder="templates")
@@ -92,3 +91,34 @@ def user_personal_favorite():
 
     return render_template('profile/favorite_recipe.html', all_recipe=all_recipe, info_about_recipe=info_about_recipe,
                            del_form_favorite=del_form_favorite)
+
+
+# Добавление и удаление ингредиентов
+@profile.route('/profile_ingredient_view', methods=['GET', 'POST'])
+@login_required
+def view_profile_ingredient():
+    # Получение списка всех рецептов
+    all_ingredients = Ingredient.get_all_ingredients()
+
+    # Форма добавления ингредиента
+    add_form_ingredient = AddIngredient()
+
+    # Форма удаления ингредиента
+    del_form_ingredient = DelIngredient()
+
+    # Переход по форме "узнать больше"
+    if add_form_ingredient.submit_add_ingred.data:
+        Ingredient.add_ingredient(add_form_ingredient.ingredient.data)
+        return redirect(url_for('profile.view_profile_ingredient'))
+
+    # Удаление из избранных
+    elif del_form_ingredient.submit_del_ingred.data:
+        if session['role'] == 2:
+            Ingredient.del_ingredient(del_form_ingredient.id_ingredient.data)
+            return redirect(url_for('profile.view_profile_ingredient'))
+        else:
+            flash("Вы не можете удалять ингредиенты, т.к. вы не администратор", category='danger')
+            return redirect(url_for('profile.view_profile_ingredient'))
+
+    return render_template('profile/add_ingredient.html', all_ingredients=all_ingredients,
+                           add_form_ingredient=add_form_ingredient, del_form_ingredient=del_form_ingredient)

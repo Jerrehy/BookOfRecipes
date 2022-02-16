@@ -14,6 +14,13 @@
             <br>
             {{ add_favorite.submit_add_fav(class="btn btn-lg btn-block btn-primary") }}
         </form>
+        {% if session['role'] == 2%}
+        <form method="POST" class="form-add" action="{{url_for('recipe.one_recipe_page_view', id_recipe=id_recipe)}}" class="form-addding">
+            {{ delete_recipe.id_recipe(value=recipe_for_view.Recipe.id_recipe) }}
+            <br>
+            {{ delete_recipe.submit_del(class="btn btn-lg btn-block btn-danger") }}
+        </form>
+        {% endif %}
         <br>
         <table class="table table-hover table-responsive-md table-bordered table-info table-striped">
             <tbody>
