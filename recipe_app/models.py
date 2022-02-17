@@ -147,6 +147,11 @@ class Ingredient(db.Model):
     def get_all_ingredients():
         return Ingredient.query.all()
 
+    # Получение ID ингредиента по имени
+    @staticmethod
+    def get_ingredient_by_name(name_ingredient):
+        return Ingredient.query.filter_by(name_ingredient=name_ingredient).first()
+
     # Добавление ингрединта в базу
     @staticmethod
     def add_ingredient(name_ingredient):
@@ -176,6 +181,7 @@ class IngredientInRecipe(db.Model):
     __tablename__ = 'ingredient_in_recipe'
     __table_args__ = {'extend_existing': True}
 
+    # Получение всех ингредиентов для рецепта
     @staticmethod
     def get_all_ingredients_for_recipe(id_recipe):
         query = db.session.query(IngredientInRecipe, Ingredient)
@@ -183,11 +189,28 @@ class IngredientInRecipe(db.Model):
         query = query.filter(IngredientInRecipe.id_recipe == id_recipe)
         return query.all()
 
+    # Добавление публикации рецепта пользователю
+    @staticmethod
+    def add_ingredient_for_recipe(id_recipe, id_ingredient, weight):
+        new_ingredient_for_recipe = IngredientInRecipe(id_recipe=id_recipe, id_ingredient=id_ingredient, weight=weight)
+        try:
+            db.session.add(new_ingredient_for_recipe)
+            db.session.commit()
+            flash("Новый ингредиент был добавлен в рецепт.", category='success')
+        except:
+            db.session.rollback()
+            flash("Произошла ошибка при добавлении нового ингредиента в рецепт. Повторите попытку.", category='danger')
+
 
 # Таблица с владельцами рецептов
 class Publication(db.Model):
     __tablename__ = 'publication'
     __table_args__ = {'extend_existing': True}
+
+    @staticmethod
+    def get_id_of_personal_recipe_user(id_recipe):
+        query = Publication.query.filter_by(id_recipe=id_recipe).first()
+        return query.id_book_user
 
     @staticmethod
     def get_personal_recipes(id_book_user):

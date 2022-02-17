@@ -70,6 +70,28 @@
         </table>
     </div>
 </div>
+{% if owner == current_user.get_id() %}
+<div class="container" align="left">
+    <h1 class="h3 me-auto font-weight-normal text-left">
+       Добавить ингредиент
+    </h1>
+    <br>
+    <form method="POST" class="form-add" action="{{url_for('recipe.one_recipe_page_view', id_recipe=id_recipe)}}" style="color:white">
+        {{ add_ingredient_form.id_recipe(value=id_recipe) }}
+        
+        {{ add_ingredient_form.ingredient.label() }}
+        {{ add_ingredient_form.ingredient(class="form-control") }}
+
+        {{ add_ingredient_form.weight.label() }}
+        {{ add_ingredient_form.weight(class="form-control") }}
+
+        <br>
+
+        {{ add_ingredient_form.submit_add_ingro(class="btn btn-lg btn-block btn-dark") }}
+
+    </form>
+</div>
+{% endif %}
 <div class="row" style="margin-top:20px; margin-left:20px">
     <div class="col-8">
         <h2> Все отзывы</h2>
@@ -120,11 +142,12 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $("ingredient").DataTable(
+        $("#comment").DataTable(
             {
                 columns: [
                     { orderable: true, searchable: true },
-                    { orderable: true, searchable: true }
+                    { orderable: true, searchable: true },
+                    { orderable: true, searchable: true } 
                 ],
                 language: {
                     "processing": "Подождите...",
@@ -153,7 +176,7 @@
 </script>
 <script>
     $(document).ready(function () {
-        $("comment").DataTable(
+        $("#ingredient").DataTable(
             {
                 columns: [
                     { orderable: true, searchable: true },

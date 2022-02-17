@@ -106,9 +106,9 @@ class AddIngredient(FlaskForm):
 # Форма для добавления ингредиента в рецепт
 class AddIngredientInRecipe(FlaskForm):
     id_recipe = HiddenField()
-    ingredient = StringField(label='Именование ингредиента')
+    ingredient = SelectField(label='Именование ингредиента', choices=[])
     weight = IntegerField(label='Вес ингредиента')
-    submit_add = SubmitField(label='Добавить ингредиент в рецепт')
+    submit_add_ingro = SubmitField(label='Добавить ингредиент в рецепт')
 
 
 # Форма удаления ингредиента

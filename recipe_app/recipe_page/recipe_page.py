@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
-from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review, Favorite
-from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment, AddFavorite
+from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review, Favorite, Ingredient
+from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment, AddFavorite, AddIngredientInRecipe
 from flask_login import login_required, current_user
 
 recipe = Blueprint('recipe', __name__, template_folder="templates")
@@ -36,6 +36,14 @@ def one_recipe_page_view(id_recipe):
     add_favorite = AddFavorite()
     # Форма удаления рецепта
     delete_recipe = DeleteRecipe()
+    # Форма добавления ингредиента
+    add_ingredient_form = AddIngredientInRecipe()
+    # Получения списка всех ингредиентов
+    all_ingredients = Ingredient.get_all_ingredients()
+    # Заполнение списка ингредиентов
+    add_ingredient_form.ingredient.choices = [i.name_ingredient for i in all_ingredients]
+    # Получение ID владельца рецепта
+    owner = Publication.get_id_of_personal_recipe_user(id_recipe)
 
     if add_comment.submit_add.data:
         # Добавления отзыва
@@ -57,9 +65,21 @@ def one_recipe_page_view(id_recipe):
             flash("Это может делать только админ", category='danger')
             return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
 
+    # Добавление нового ингредиента в рецепт
+    elif add_ingredient_form.submit_add_ingro.data:
+        if current_user.get_id() == owner:
+            ingredient_for_add = Ingredient.get_ingredient_by_name(add_ingredient_form.ingredient.data)
+            IngredientInRecipe.add_ingredient_for_recipe(id_recipe, ingredient_for_add.id_ingredient,
+                                                         add_ingredient_form.weight.data)
+            return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+        else:
+            flash("Вы должны быть владельцем рецепта", category='danger')
+            return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+
     return render_template('recipe/one_recipe.html', recipe_for_view=recipe_for_view, all_comments=all_comments,
                            ingredients_in_recipe=ingredients_in_recipe, add_comment=add_comment,
-                           add_favorite=add_favorite, id_recipe=id_recipe, delete_recipe=delete_recipe)
+                           add_favorite=add_favorite, id_recipe=id_recipe, delete_recipe=delete_recipe,
+                           add_ingredient_form=add_ingredient_form, owner=owner)
 
 
 @recipe.route('/personal_recipes', methods=['GET', 'POST'])
