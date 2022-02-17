@@ -27,7 +27,7 @@
                     <td>
                         <form method="post" action="{{url_for('profile.user_personal_comments')}}">
                             {{ del_form_recipe.id_recipe(value=comment.Recipe.id_recipe) }}
-                            {{ del_form_recipe.submit_del(class="btn btn-lg btn-block btn-danger") }}
+                            {{ del_form_recipe.submit_del_coma(class="btn btn-lg btn-block btn-danger") }}
                         </form>
                     </td>
                 </tr>
@@ -42,12 +42,13 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $("comment").DataTable(
+        $("#comment").DataTable(
             {
                 columns: [
                     { orderable: true, searchable: true },
                     { orderable: true, searchable: true },
-                    { orderable: true, searchable: true }
+                    { orderable: true, searchable: true },
+                    { orderable: false, searchable: false },
                 ],
                 language: {
                     "processing": "Подождите...",

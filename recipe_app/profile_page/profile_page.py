@@ -62,7 +62,7 @@ def user_personal_comments():
     del_form_recipe = DeleteComment()
 
     # Удаления отзыва
-    if del_form_recipe.submit_del.data:
+    if del_form_recipe.submit_del_coma.data:
         Review.del_review(current_user.get_id(), del_form_recipe.id_recipe.data)
         return redirect(url_for('profile.user_personal_comments'))
 

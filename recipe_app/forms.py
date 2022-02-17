@@ -74,7 +74,8 @@ class DeleteRecipe(FlaskForm):
 # Форма для удаления рецепта
 class DeleteComment(FlaskForm):
     id_recipe = HiddenField()
-    submit_del = SubmitField(label='Удалить комментарий')
+    login_user = HiddenField()
+    submit_del_coma = SubmitField(label='Удалить комментарий')
 
 
 # Форма для добавления рецепта в избранное
@@ -115,4 +116,3 @@ class AddIngredientInRecipe(FlaskForm):
 class DelIngredient(FlaskForm):
     id_ingredient = HiddenField()
     submit_del_ingred = SubmitField(label='Удалить ингредиент')
-

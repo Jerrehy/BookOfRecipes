@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
-from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review, Favorite, Ingredient
-from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment, AddFavorite, AddIngredientInRecipe
+from recipe_app.models import Recipe, RecipeCategory, IngredientInRecipe, Publication, Review, Favorite, Ingredient, \
+    BookUser
+from recipe_app.forms import RecipeInfoById, AddRecipeForm, DeleteRecipe, AddComment, AddFavorite
+from recipe_app.forms import DeleteComment, AddIngredientInRecipe
 from flask_login import login_required, current_user
 
 recipe = Blueprint('recipe', __name__, template_folder="templates")
@@ -44,6 +46,8 @@ def one_recipe_page_view(id_recipe):
     add_ingredient_form.ingredient.choices = [i.name_ingredient for i in all_ingredients]
     # Получение ID владельца рецепта
     owner = Publication.get_id_of_personal_recipe_user(id_recipe)
+    # Форма для удаление отзывов
+    delete_comments = DeleteComment()
 
     if add_comment.submit_add.data:
         # Добавления отзыва
@@ -76,10 +80,20 @@ def one_recipe_page_view(id_recipe):
             flash("Вы должны быть владельцем рецепта", category='danger')
             return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
 
+    # Удаление отзыва админом
+    elif delete_comments.submit_del_coma.data:
+        if session['role'] == 2:
+            search_user = BookUser.get_user_by_login(delete_comments.login_user.data)
+            Review.del_review(search_user.id_book_user, id_recipe)
+            return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+        else:
+            flash("Вы должны быть администратором", category='danger')
+            return redirect(url_for('recipe.one_recipe_page_view', id_recipe=id_recipe))
+
     return render_template('recipe/one_recipe.html', recipe_for_view=recipe_for_view, all_comments=all_comments,
                            ingredients_in_recipe=ingredients_in_recipe, add_comment=add_comment,
                            add_favorite=add_favorite, id_recipe=id_recipe, delete_recipe=delete_recipe,
-                           add_ingredient_form=add_ingredient_form, owner=owner)
+                           add_ingredient_form=add_ingredient_form, owner=owner, delete_comments=delete_comments)
 
 
 @recipe.route('/personal_recipes', methods=['GET', 'POST'])

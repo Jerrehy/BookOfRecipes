@@ -344,11 +344,10 @@ class Review(db.Model):
 
     @staticmethod
     def del_review(id_book_user, id_recipe):
-        search = Review.query.filter_by(id_book_user=id_book_user, id_recipe=id_recipe).first()
         Review.query.filter_by(id_book_user=id_book_user, id_recipe=id_recipe).delete()
         try:
-            flash("Комментарий был успещно удалён.", category='success')
+            flash("Отзыв был успешно удалён.", category='success')
             db.session.commit()
         except:
-            flash("Произошла ошибка при удалении комментария. Повторите попытку.", category='danger')
+            flash("Произошла ошибка при удалении отзыва. Повторите попытку.", category='danger')
             db.session.rollback()

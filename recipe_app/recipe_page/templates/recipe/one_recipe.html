@@ -110,6 +110,13 @@
                     <td>{{comment.BookUser.login }}</td>
                     <td>{{comment.Review.grade}}</td>
                     <td>{{comment.Review.comment}}</td>
+                    <td>
+                        <form method="post" action="{{url_for('recipe.one_recipe_page_view', id_recipe=id_recipe)}}">
+                            {{ delete_comments.id_recipe(value=comment.Review.id_recipe) }}
+                            {{ delete_comments.login_user(value=comment.BookUser.login) }}
+                            {{ delete_comments.submit_del_coma(class="btn btn-lg btn-block btn-danger") }}
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
